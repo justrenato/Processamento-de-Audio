@@ -35,17 +35,15 @@ void lerWav(FILE *entradaWav, tipoWav* wav){
 	fread(&wav->Subchunk2Size, 4, 1, entradaWav);
 
   	/*Aloca espaço em wav->Data do tamanho do espaço ocupado pelas amostras de audio (indicado em wav->Subchuk2Size)*/
-	wav->Data =  malloc(wav->Subchunk2Size);
+	wav->Data = (short*) malloc(sizeof(short)*(wav->Subchunk2Size)*(wav->BitsPerSample/8));
 
 	/*Começa ler as amostras de audio*/
-	fread(wav->Data, wav->BitsPerSample, (wav->Subchunk2Size*8)/wav->BitsPerSample, entradaWav);
-	fclose(entradaWav);
-	// return wav;
+	fread(wav->Data, wav->BitsPerSample/8, wav->Subchunk2Size/(wav->BitsPerSample/8), entradaWav);
 }
 
 void escreverWav(FILE *saidaWav, tipoWav* wav){
 	/*Escreve o cabeçalho e informações sobreo formato do audio*/
-	fwrite(wav->ChunkID, 4, 1, saidaWav);
+	fwrite(wav->ChunkID, 1, 4, saidaWav);
 	fwrite(&wav->ChunkSize, 4, 1, saidaWav);
 	fwrite(wav->Format, 4, 1, saidaWav);
 	fwrite(wav->Subchunk1ID, 4, 1, saidaWav);
@@ -60,9 +58,55 @@ void escreverWav(FILE *saidaWav, tipoWav* wav){
 	fwrite(&wav->Subchunk2Size, 4, 1, saidaWav);
 
 	/*Começa escrever as amostras de audio*/
-	fwrite(wav->Data, wav->BitsPerSample, (wav->Subchunk2Size*8)/wav->BitsPerSample, saidaWav);
-	fclose(saidaWav);
+	fwrite(wav->Data, wav->BitsPerSample/8, wav->Subchunk2Size/(wav->BitsPerSample/8), saidaWav);
 }
+
+
+void info(tipoWav* wav){
+	printf("Riff tag: \"");
+	for (int i = 0; i < 4; ++i)
+	{
+		printf("%c",wav->ChunkID[i] );
+	}
+	printf("\"\n");
+
+	printf("Riff size: %d\n",wav->ChunkSize);
+
+	printf("Wave tag : \"");
+	for (int i = 0; i < 4; ++i)
+	{
+		printf("%c",wav->Format[i] );
+	}
+	printf("\"\n");
+
+	printf("Form tag : \"");
+	for (int i = 0; i < 4; ++i)
+	{
+		printf("%c",wav->Subchunk1ID[i] );
+	}
+	printf("\"\n");
+
+	printf("Fmt_size: %d\n",wav->Subchunk1Size );
+	printf("Audio_format: %d\n",wav->AudioFormat );
+	printf("Num_channels: %d\n",wav->NumChannels );
+	printf("Sample_rate: %d\n",wav->SampleRate );
+	printf("Byte_rate: %d\n",wav->ByteRate );
+	printf("Block_align: %d\n",wav->BlockAlign );
+	printf("Bits_per_sample: %d\n",wav->BitsPerSample );
+
+	printf("Data tag: \"");
+	for (int i = 0; i < 4; ++i)
+	{
+		printf("%c",wav->Subchunk2ID[i] );
+	}
+	printf("\"\n");
+
+	printf("Data size : %d\n",wav->Subchunk2Size );
+	printf("Samples / Channel: %d\n",(wav->Subchunk2Size*8)/ (wav->BitsPerSample * wav->NumChannels));
+}
+
+
+
 
 int main(){
 
@@ -72,7 +116,7 @@ int main(){
 		exit(1);
 	}
 
-	FILE *saidaWav = fopen("saida.wav", "w");
+	FILE *saidaWav = fopen("saida.wav", "w+");
 	if(!saidaWav){
 		perror("Erro ao criar arquivo de saída");
 		exit(1);
@@ -82,5 +126,7 @@ int main(){
 	lerWav(entradaWav, &wav);
 	escreverWav(saidaWav, &wav);
 
-	printf("\n");
+	//info(&wav);
+
+	int fcloseall (void);
 }
