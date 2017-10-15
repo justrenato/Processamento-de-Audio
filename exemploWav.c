@@ -18,7 +18,7 @@ typedef struct tipoWav{
 	short *Data;
 }tipoWav;
 
-tipoWav readWAV(FILE *entradaWav, tipoWav wav){
+tipoWav lerWav(FILE *entradaWav, tipoWav wav){
 	/*Le o cabeçalho e informações sobreo formato do audio*/
 	fread(wav.ChunkID, 4, 1, entradaWav);
 	fread(&wav.ChunkSize, 4, 1, entradaWav);
@@ -38,13 +38,12 @@ tipoWav readWAV(FILE *entradaWav, tipoWav wav){
 	wav.Data =  malloc(wav.Subchunk2Size);
 
 	/*Começa ler as amostras de audio*/
-	fread(wav.Data, 1, wav.Subchunk2Size, entradaWav);
-
+	fread(wav.Data, wav.BitsPerSample, (wav.Subchunk2Size*8)/wav.BitsPerSample, entradaWav);
 	fclose(entradaWav);
 	return wav;
 }
 
-tipoWav writeWAV(FILE *saidaWav, tipoWav wav){
+tipoWav escreverWav(FILE *saidaWav, tipoWav wav){
 	/*Escreve o cabeçalho e informações sobreo formato do audio*/
 	fwrite(wav.ChunkID, 4, 1, saidaWav);
 	fwrite(&wav.ChunkSize, 4, 1, saidaWav);
@@ -61,8 +60,8 @@ tipoWav writeWAV(FILE *saidaWav, tipoWav wav){
 	fwrite(&wav.Subchunk2Size, 4, 1, saidaWav);
 
 	/*Começa escrever as amostras de audio*/
-	fwrite(wav.Data,  wav.BitsPerSample, wav.Subchunk2Size/wav.BitsPerSample, saidaWav);
-	// fclose(saidaWav);
+	fwrite(wav.Data, wav.BitsPerSample, (wav.Subchunk2Size*8)/wav.BitsPerSample, saidaWav);
+	fclose(saidaWav);
 	return wav;
 }
 
@@ -81,8 +80,8 @@ int main(){
 	}
 
 	tipoWav wav;
-	wav = readWAV(entradaWav, wav);
-	writeWAV(saidaWav, wav);
+	wav = lerWav(entradaWav, wav);
+	escreverWav(saidaWav, wav);
 
 	printf("\n");
 }
