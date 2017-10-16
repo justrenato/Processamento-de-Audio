@@ -132,6 +132,43 @@ void inverteWav(tipoWav* wav, FILE *entradaWav,FILE *saidaWav){
 		fread(amostra,wav->BitsPerSample,1,entradaWav); //coleta amostra de audio
 		fwrite(amostra,wav->BitsPerSample,1,saidaWav); //escreve amostra de audio no arquivo de saida
 	}
+	rewind(entradaWav);
+	rewind(saidaWav);
+}
+
+void volume(tipoWav* wav, FILE *entradaWav,FILE *saidaWav){
+	float volume=1;
+	int* amostra;
+	amostra = malloc (wav->BitsPerSample); //aloca espaço no tamanho de uma amostra
+	printf("ponteiro entrada: %ld\n",ftell(entradaWav) );
+	printf("ponteiro saida: %ld\n",ftell(saidaWav) );
+	printf("Digite o volume(min: 0 max: 10): \n");
+	scanf("%f",&volume);
+	while((volume<0)||(volume>10)){
+		printf("Valor não aceito.\n");
+		printf("Digite o volume(min: 0 max: 10): \n");
+		scanf("%f",&volume);
+	}
+	/*escreve o cabeçalho no arquivo de saida*/
+	fwrite(wav->ChunkID, 1, 4, saidaWav);
+	fwrite(&wav->ChunkSize, 4, 1, saidaWav);
+	fwrite(wav->Format, 4, 1, saidaWav);
+	fwrite(wav->Subchunk1ID, 4, 1, saidaWav);
+	fwrite(&wav->Subchunk1Size, 4, 1, saidaWav);
+	fwrite(&wav->AudioFormat, 2, 1, saidaWav);
+	fwrite(&wav->NumChannels, 2, 1, saidaWav);
+	fwrite(&wav->SampleRate, 4, 1, saidaWav);
+	fwrite(&wav->ByteRate, 4, 1, saidaWav);
+	fwrite(&wav->BlockAlign, 2, 1, saidaWav);
+	fwrite(&wav->BitsPerSample, 2, 1, saidaWav);
+	fwrite(wav->Subchunk2ID, 4, 1, saidaWav);
+	fwrite(&wav->Subchunk2Size, 4, 1, saidaWav);
+
+	while(!feof(entradaWav)){
+		fread(amostra,wav->BitsPerSample,1,entradaWav); //coleta amostra de audio
+		*amostra=*amostra*volume;
+		fwrite(amostra,wav->BitsPerSample,1,saidaWav); //escreve amostra de audio no arquivo de saida
+	}
 }
 
 
@@ -154,8 +191,8 @@ int main(){
 
 	// infoWav(&wav);
 	// escreverWav( &wav, saidaWav);
-	inverteWav( &wav, entradaWav,saidaWav);
-
+	// inverteWav( &wav, entradaWav,saidaWav);
+	volume( &wav, entradaWav,saidaWav);
 
 	int fcloseall (void);
 }
