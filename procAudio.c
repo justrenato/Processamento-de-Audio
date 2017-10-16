@@ -136,12 +136,10 @@ void inverteWav(tipoWav* wav, FILE *entradaWav,FILE *saidaWav){
 	rewind(saidaWav);
 }
 
-void volume(tipoWav* wav, FILE *entradaWav,FILE *saidaWav){
+void setVolume(tipoWav* wav, FILE *entradaWav,FILE *saidaWav){
 	float volume=1;
 	int* amostra;
 	amostra = malloc (wav->BitsPerSample); //aloca espaço no tamanho de uma amostra
-	printf("ponteiro entrada: %ld\n",ftell(entradaWav) );
-	printf("ponteiro saida: %ld\n",ftell(saidaWav) );
 	printf("Digite o volume(min: 0 max: 10): \n");
 	scanf("%f",&volume);
 	while((volume<0)||(volume>10)){
@@ -169,8 +167,73 @@ void volume(tipoWav* wav, FILE *entradaWav,FILE *saidaWav){
 		*amostra=*amostra*volume;
 		fwrite(amostra,wav->BitsPerSample,1,saidaWav); //escreve amostra de audio no arquivo de saida
 	}
+	rewind(entradaWav);
+	rewind(saidaWav);
 }
 
+void ajustVolume(tipoWav* wav, FILE *entradaWav,FILE *saidaWav){
+	int *amostra,maior,menor;
+	amostra = malloc (wav->BitsPerSample); //aloca espaço no tamanho de uma amostra
+	
+	/*escreve o cabeçalho no arquivo de saida*/
+	fwrite(wav->ChunkID, 1, 4, saidaWav);
+	fwrite(&wav->ChunkSize, 4, 1, saidaWav);
+	fwrite(wav->Format, 4, 1, saidaWav);
+	fwrite(wav->Subchunk1ID, 4, 1, saidaWav);
+	fwrite(&wav->Subchunk1Size, 4, 1, saidaWav);
+	fwrite(&wav->AudioFormat, 2, 1, saidaWav);
+	fwrite(&wav->NumChannels, 2, 1, saidaWav);
+	fwrite(&wav->SampleRate, 4, 1, saidaWav);
+	fwrite(&wav->ByteRate, 4, 1, saidaWav);
+	fwrite(&wav->BlockAlign, 2, 1, saidaWav);
+	fwrite(&wav->BitsPerSample, 2, 1, saidaWav);
+	fwrite(wav->Subchunk2ID, 4, 1, saidaWav);
+	fwrite(&wav->Subchunk2Size, 4, 1, saidaWav);
+
+	fread(amostra,wav->BitsPerSample,1,entradaWav); //coleta amostra de audio
+	menor=*amostra;
+	maior=*amostra;
+
+	while(!feof(entradaWav)){
+		fread(amostra,wav->BitsPerSample,1,entradaWav); //coleta amostra de audio
+		if (*amostra>maior)
+		{
+			maior=*amostra;
+		}
+		if (*amostra<menor)
+		{
+			menor=*amostra;
+		}
+	}
+	printf("amostra: %d\n",*amostra );
+	printf("maior: %d\n",maior );
+	printf("menor: %d\n",menor );
+	fseek(entradaWav,44,SEEK_SET);
+	fread(amostra,wav->BitsPerSample,1,entradaWav); //coleta amostra de audio
+	maior=(maior/32767*100)-100;
+	menor=(menor/-32767*100)-100;
+	printf("maior: %d\n",maior );
+	printf("menor: %d\n",menor );
+
+	while(!feof(entradaWav)){
+		if((*amostra>0)&&(*amostra>32767)){
+			*amostra=*amostra*(-maior);
+		}	
+		if ((*amostra<0)&&(*amostra<32767))
+		{
+			*amostra=*amostra*(menor);
+		}
+		fwrite(amostra,wav->BitsPerSample,1,saidaWav); //escreve amostra de audio no arquivo de saida
+		fread(amostra,wav->BitsPerSample,1,entradaWav); //coleta amostra de audio
+	}
+
+
+
+
+
+	rewind(entradaWav);
+	rewind(saidaWav);
+}
 
 int main(){
 
@@ -192,7 +255,8 @@ int main(){
 	// infoWav(&wav);
 	// escreverWav( &wav, saidaWav);
 	// inverteWav( &wav, entradaWav,saidaWav);
-	volume( &wav, entradaWav,saidaWav);
+	// setVolume( &wav, entradaWav,saidaWav);
+	ajustVolume( &wav, entradaWav,saidaWav);
 
 	int fcloseall (void);
 }
