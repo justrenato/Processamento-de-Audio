@@ -116,17 +116,24 @@ void setVolume(tipoWav* wav, FILE *entradaWav,FILE *saidaWav){
 	/*escreve o cabeçalho no arquivo de saida*/
 	fwrite(wav, 1, 44, saidaWav);
 
+
+	/*aqui ta somando "volume" vezes, ao invéz de multiplicar pelo volume*/
+	int i=0;
+	int16_t* antigo;
+	antigo = malloc (wav->BitsPerSample);
 	while(!feof(entradaWav)){
 		fread(amostra,wav->BitsPerSample,1,entradaWav); //coleta amostra de audio
-		if(*amostra>0){
-			*amostra=*amostra*-volume;
+		*antigo = *amostra;
+		while(i < volume){
+			*amostra = *amostra + *antigo;
+			i++;
 		}
-		if (*amostra<0)
-		{
-		*amostra=*amostra*-volume;
-		}
+		i=0;
 		fwrite(amostra,wav->BitsPerSample,1,saidaWav); //escreve amostra de audio no arquivo de saida
 	}
+
+
+
 }
 
 void ajustVolume(tipoWav* wav, FILE *entradaWav,FILE *saidaWav){
