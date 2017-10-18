@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <inttypes.h>
-#include "filtros.h"
+#include <unistd.h>
 #define PICOMAX 32767
 #define PICOMIN -32767
 
@@ -24,13 +24,25 @@ typedef struct tipoWav{
 	int16_t *Data;
 }tipoWav;
 
+
+// struct option longopts[] = {
+//     {"wavinfo",    required_argument, 0, 'a'},
+//     {"wavrev",     required_argument, 0, 'b'},
+//     {"wavvol",     required_argument, 0, 'c'},
+//     {"wavautovol", required_argument, 0, 'd'},
+//     {"wavecho",    required_argument, 0, 'e'},
+//     {"wavwide",    required_argument, 0, 'f'},
+//     {"wavcat",     required_argument, 0, 'g'},
+//     {"wavmix",     required_argument, 0, 'h'}
+// };
+
 void lerWav(FILE *entradaWav, tipoWav* wav);
 
 void escreverWav(tipoWav* wav, FILE *saidaWav );
 
 void infoWav(tipoWav* wav);
 
-void inverteWav(tipoWav* wav, FILE *entradaWav,FILE *saidaWav);
+void reverteWav(tipoWav* wav, FILE *entradaWav,FILE *saidaWav);
 
 void setVolume(tipoWav* wav, FILE *entradaWav,FILE *saidaWav);
 
