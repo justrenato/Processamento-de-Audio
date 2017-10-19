@@ -4,8 +4,7 @@
 #include <stdlib.h>
 #include <inttypes.h>
 #include <unistd.h>
-#define PICOMAX 32767
-#define PICOMIN -32767
+#define PICO 32767
 
 typedef struct tipoWav{
 	char ChunkID[4];
@@ -44,7 +43,7 @@ void infoWav(tipoWav* wav);
 
 void reverteWav(tipoWav* wav, FILE *entradaWav,FILE *saidaWav);
 
-void setVolume(tipoWav* wav, FILE *entradaWav,FILE *saidaWav);
+void setVolume(tipoWav* wav, FILE *entradaWav,FILE *saidaWav,float vol);
 
 void ajustVolume(tipoWav* wav, FILE *entradaWav,FILE *saidaWav);
 

@@ -42,3 +42,30 @@ void infoWav(tipoWav* wav){
 	printf("Data size       : %d\n",wav->Subchunk2Size );
 	printf("Samples/Channel : %d\n",(wav->Subchunk2Size*8)/ (wav->BitsPerSample * wav->NumChannels));
 }
+
+
+int main(int argc, char *argv[]){
+	int opt,prosseguir=0;
+	FILE *entradaWav;
+	tipoWav wav;
+	while( (opt = getopt(argc, argv, "i:")) > 0 ) {
+		switch ( opt ) {
+     	    case 'i': /* help */
+				entradaWav = fopen(optarg, "r");
+				if(!entradaWav) {
+					perror("Erro ao abrir arquivo de entrada");
+					exit(1);
+				} else prosseguir=1;
+				lerWav(entradaWav, &wav);
+               break ;
+           default:
+               fprintf(stderr, "Opcao invalida ou faltando argumento: `%c'\n", optopt) ;
+               return -1 ;
+		}        
+	}
+
+	if(prosseguir){
+		infoWav(&wav);
+	} else {puts("opção invalida ou faltando argumento.");}
+	
+}

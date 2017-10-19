@@ -6,33 +6,33 @@ int main(int argc, char *argv[]){
 	FILE *entradaWav,*saidaWav;
 	tipoWav wav;
 
-	// while( (opt = getopt(argc, argv, "i:o:frva")) > 0 ) {
-	//        switch ( opt ) {
-	//      	    case 'i': /* help */
-	// 			entradaWav = fopen(optarg, "r");
-	// 			lerWav(entradaWav, &wav);
-	//                break ;
-	//            case 'o': /* opção -n */
-	// 			saidaWav = fopen(optarg, "w+");
-	//                break ;
-	//            case 'f': /* opção -i */
-	//                infoWav(&wav);
-	//                break ;
-	//            case 'r': /* opção -e */
-	//                reverteWav( &wav, entradaWav,saidaWav);
-	//                break ;
-	//            case 'v': /* opção -c */
-	//                setVolume( &wav, entradaWav,saidaWav);
-	//                break ;
-	//            case 'a': /* opção -c */
-	//                ajustVolume( &wav, entradaWav,saidaWav);
-	//                break ;
-	//            default:
-	//                fprintf(stderr, "Opcao invalida ou faltando argumento: `%c'\n", optopt) ;
-	//                return -1 ;
-	//        }
-	//        printf("%s\n",optarg );        
-	//     }
+	while( (opt = getopt(argc, argv, "i:o:frva")) > 0 ) {
+	       switch ( opt ) {
+	     	    case 'i': /* help */
+				entradaWav = fopen(optarg, "r");
+				lerWav(entradaWav, &wav);
+	               break ;
+	           case 'o': /* opção -n */
+				saidaWav = fopen(optarg, "w+");
+	               break ;
+	           // case 'f': /* opção -i */
+	           //     infoWav(&wav);
+	           //     break ;
+	           // case 'r': /* opção -e */
+	           //     reverteWav( &wav, entradaWav,saidaWav);
+	           //     break ;
+	           // case 'v': /* opção -c */
+	           //     setVolume( &wav, entradaWav,saidaWav);
+	           //     break ;
+	           // case 'a': /* opção -c */
+	           //     ajustVolume( &wav, entradaWav,saidaWav);
+	           //     break ;
+	           default:
+	               fprintf(stderr, "Opcao invalida ou faltando argumento: `%c'\n", optopt) ;
+	               return -1 ;
+	       }
+	       // printf("%s\n",optarg );        
+	    }
 
 	// FILE *entradaWav = fopen("adele.wav","r");
 	// if(!entradaWav) {
@@ -45,7 +45,7 @@ int main(int argc, char *argv[]){
 	// 	exit(1);
 	// }
 
-	lerWav(entradaWav, &wav);
+	// lerWav(entradaWav, &wav);
 	// infoWav(&wav);
 	// escreverWav( &wav, saidaWav);
 	// reverteWav( &wav, entradaWav,saidaWav);

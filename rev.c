@@ -15,3 +15,30 @@ void reverteWav(tipoWav* wav, FILE *entradaWav,FILE *saidaWav){
 		fwrite(amostra,wav->BitsPerSample,1,saidaWav); //escreve amostra de audio no arquivo de saida
 	}
 }
+
+int main(int argc, char *argv[]){
+	int opt,prosseguir=0;
+	FILE *entradaWav,*saidaWav;
+	tipoWav wav;
+	while( (opt = getopt(argc, argv, "i:o:")) > 0 ) {
+		switch ( opt ) {
+     	    case 'i': /* help */
+				entradaWav = fopen(optarg, "r");
+				if(!entradaWav) {
+					perror("Erro ao abrir arquivo de entrada");
+					exit(1);
+				} else prosseguir =1;
+				lerWav(entradaWav, &wav);
+               break ;
+	           case 'o': /* opção -n */
+				saidaWav = fopen(optarg, "w+");
+	            break ;
+           default:
+            	fprintf(stderr, "Opcao invalida ou faltando argumento: `%c'\n", optopt) ;
+              	return -1 ;
+		}        
+	}
+	if(prosseguir){
+		reverteWav( &wav, entradaWav,saidaWav);
+	} else {puts("opção invalida ou faltando argumento.");}
+}
