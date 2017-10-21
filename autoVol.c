@@ -23,24 +23,15 @@ void ajustVolume(tipoWav* wav, FILE *entradaWav,FILE *saidaWav){
 		if (*amostra>maior)
 		{
 			maior=*amostra;
-			printf("maior: %d\n",maior );
 		}
 	}
 	taxa=0; /*so inicializando pra nao xiar no -Wall*/
-	printf("maior antes da taxa: %d\n",maior );
-	printf("valor TAXA: %f\n",taxa );
-	printf("divisao: %d\n",32767/maior );
-	taxa = 32767/(float)maior;
-	printf("TAXA: %f\n",taxa );
-
+	taxa = PICO/(float)maior;
 	fseek(entradaWav,44,SEEK_SET);
 	fread(amostra,wav->BitsPerSample,1,entradaWav); //coleta amostra de audio
 	while(!feof(entradaWav)){
 		fwrite(amostra,wav->BitsPerSample,1,saidaWav); //escreve amostra de audio no arquivo de saida
 		*amostra=*amostra*taxa;
-		if (*amostra>32000){	
-			printf("maior: %d\n",*amostra );
-		}
 		fread(amostra,wav->BitsPerSample,1,entradaWav); //coleta amostra de audio
 	}
 }

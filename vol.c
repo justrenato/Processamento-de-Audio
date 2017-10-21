@@ -7,7 +7,7 @@ void setVolume(tipoWav* wav, FILE *entradaWav,FILE *saidaWav,float vol){
 	/*escreve o cabeçalho no arquivo de saida*/
 	fwrite(wav, 1, 44, saidaWav);
 	fseek(entradaWav,44,SEEK_SET);
-	/*aqui ta somando "volume" vezes, ao invéz de multiplicar pelo volume*/
+
 	while(!feof(entradaWav)){
 		// printf(" no while com ponteiro em: %ld\n",ftell(entradaWav) );
 		fread(amostra,2,1,entradaWav); //coleta amostra de audio
