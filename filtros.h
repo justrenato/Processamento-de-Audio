@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <inttypes.h>
 #include <unistd.h>
+#include <string.h>
 #define PICO 32767
 
 typedef struct tipoWav{
