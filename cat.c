@@ -2,7 +2,7 @@
 
 void cat(int argc, char *argv[]){
 	int16_t *amostra,BitsPerSample;
-	uint32_t tam,newTam;
+	uint32_t tam,newTam,newchunkSize;
 	tipoWav wav;
 	FILE *saidaWav;
 
@@ -45,16 +45,27 @@ void cat(int argc, char *argv[]){
 	for (int i = 2; i < argc -2; ++i)
 	{
 		entradaWav = fopen(argv[i],"r");
-		fseek(entradaWav,40,SEEK_SET);
-		fread(&tam,4,1,entradaWav); //le o subChunk2Size
-		newTam = newTam + tam; //calcula o tamanho total do novo arquivo
+		if(!entradaWav) {
+			perror("Erro ao abrir arquivo de entrada");
+			printf("Arquivo: %s\n",argv[i] );
+			exit(1);
+		} 
+		else {
+			fseek(entradaWav,40,SEEK_SET);
+			fread(&tam,4,1,entradaWav); //le o subChunk2Size
+			newTam = newTam + tam; //calcula o tamanho total do novo arquivo
 
-		fread(amostra,BitsPerSample,1,entradaWav); //coleta amostra de audio
-		while(!feof(entradaWav)){
-			fwrite(amostra,BitsPerSample,1,saidaWav); //escreve amostra de audio no arquivo de saida
 			fread(amostra,BitsPerSample,1,entradaWav); //coleta amostra de audio
+			while(!feof(entradaWav)){
+				fwrite(amostra,BitsPerSample,1,saidaWav); //escreve amostra de audio no arquivo de saida
+				fread(amostra,BitsPerSample,1,entradaWav); //coleta amostra de audio
+			}
 		}
 	}
+	fseek(saidaWav,4,SEEK_SET);
+	newchunkSize = newTam + 44 - 8;
+	fwrite(&newchunkSize,4,1,saidaWav);
+
 	fseek(saidaWav,40,SEEK_SET);
 	fwrite(&newTam,4,1,saidaWav);
 }
