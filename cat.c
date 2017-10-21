@@ -24,7 +24,6 @@ void cat(int argc, char *argv[]){
 		exit(1);
 	} 
 
-
 	fseek(entradaWav,34,SEEK_SET); //coloca o ponteiro no bit 34 da saida
 	fread(&BitsPerSample,2,1,entradaWav); //le o BitsPerSample
 	fseek(entradaWav,40,SEEK_SET); //coloca o ponteiro no bit 40 da saida
