@@ -3,7 +3,7 @@
 
 void ajustVolume(tipoWav* wav, FILE *entradaWav,FILE *saidaWav){
 	int16_t *amostra,maior;
-	float taxa;
+	float taxa=0;
 	amostra = malloc (wav->BitsPerSample); //aloca espaço no tamanho de uma amostra
 	
 	/*escreve o cabeçalho no arquivo de saida*/
@@ -25,7 +25,7 @@ void ajustVolume(tipoWav* wav, FILE *entradaWav,FILE *saidaWav){
 			maior=*amostra;
 		}
 	}
-	taxa=0; /*so inicializando pra nao xiar no -Wall*/
+	printf("MAIOR: %d\n",maior );
 	taxa = PICO/(float)maior;
 	fseek(entradaWav,44,SEEK_SET);
 	fread(amostra,wav->BitsPerSample,1,entradaWav); //coleta amostra de audio
