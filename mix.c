@@ -1,8 +1,9 @@
+//RENATO RIBEIRO DA SILVA GRR20172113
 #include "filtros.h"
 
-void cat(int argc, char *argv[]){
+void mix(int argc, char *argv[]){
 	int16_t *amostraEntrada,*amostraSaida,*amostra,BitsPerSample;
-	uint32_t tam,newTam,newchunkSize,SampleRate,newSampleRate;
+	uint32_t tam,newTam,newchunkSize;
 	tipoWav wav;
 	FILE *saidaWav;
 
@@ -24,9 +25,6 @@ void cat(int argc, char *argv[]){
 		exit(1);
 	} 
 
-	fseek(entradaWav,24,SEEK_SET); //coloca o ponteiro no bit 24 da saida
-	fread(&SampleRate,4,1,entradaWav); //le o SampleRate
-
 	fseek(entradaWav,34,SEEK_SET); //coloca o ponteiro no bit 34 da saida
 	fread(&BitsPerSample,2,1,entradaWav); //le o BitsPerSample
 
@@ -38,14 +36,14 @@ void cat(int argc, char *argv[]){
 	lerWav(entradaWav,&wav); //passa para a struct o cabeçalho
 
 	fwrite(&wav,44,1,saidaWav);	// escreve no arquivo de saida o cabeçalho
-	amostra = malloc (BitsPerSample); //aloca espaço no tamanho de uma amostra
-	amostraEntrada = malloc (BitsPerSample); //aloca espaço no tamanho de uma amostra
-	amostraSaida = malloc (BitsPerSample); //aloca espaço no tamanho de uma amostra
-	fread(amostraEntrada,BitsPerSample,1,entradaWav); //coleta amostra de audio
+	amostra = malloc (BitsPerSample/2); //aloca espaço no tamanho de uma amostra
+	amostraEntrada = malloc (BitsPerSample/2); //aloca espaço no tamanho de uma amostra
+	amostraSaida = malloc (BitsPerSample/2); //aloca espaço no tamanho de uma amostra
+	fread(amostraEntrada,BitsPerSample/2,1,entradaWav); //coleta amostra de audio
 
 	while(!feof(entradaWav)){
-		fwrite(amostra,BitsPerSample,1,saidaWav); //escreve amostra de audio no arquivo de saida
-		fread(amostra,BitsPerSample,1,entradaWav); //coleta amostra de audio
+		fwrite(amostra,BitsPerSample/2,1,saidaWav); //escreve amostra de audio no arquivo de saida
+		fread(amostra,BitsPerSample/2,1,entradaWav); //coleta amostra de audio
 	}
 
 
@@ -59,31 +57,27 @@ void cat(int argc, char *argv[]){
 		} 
 		else {
 			fseek(saidaWav,44,SEEK_SET); //coloca o ponteiro no bit 44 da saida para mixar amostras
-			fseek(entradaWav,24,SEEK_SET); //coloca o ponteiro no bit 24 da entrada
-			fread(&newSampleRate,4,1,entradaWav); //le o SampleRate
-			if (newSampleRate == SampleRate){
-				fseek(entradaWav,40,SEEK_SET);
-				fread(&tam,4,1,entradaWav); //le o subChunk2Size
-				if (tam > newTam)
+			fseek(entradaWav,40,SEEK_SET);
+			fread(&tam,4,1,entradaWav); //le o subChunk2Size
+			if (tam > newTam)
+			{
+				newTam =  tam; //ve o maior arquivo 
+			}
+
+			fread(amostraEntrada,BitsPerSample/2,1,entradaWav); //coleta amostra de audio
+			while(!feof(entradaWav)){
+				fread(amostraSaida,BitsPerSample/2,1,saidaWav); //coleta amostra de audio
+				if (!feof(saidaWav))
 				{
-					newTam =  tam; //ve o maior arquivo 
-				}
-
-				fread(amostraEntrada,BitsPerSample,1,entradaWav); //coleta amostra de audio
-				while(!feof(entradaWav)){
-					fread(amostraSaida,BitsPerSample,1,saidaWav); //coleta amostra de audio
-					if (!feof(saidaWav))
-					{
-						*amostra = *amostraSaida + *amostraEntrada;
-						fseek(saidaWav,-BitsPerSample,SEEK_CUR);
-						fwrite(amostra,BitsPerSample,1,saidaWav); //escreve amostra de audio no arquivo de saida
-					} else fwrite(amostraEntrada,BitsPerSample,1,saidaWav);
+					*amostra = *amostraSaida + *amostraEntrada;
+					fseek(saidaWav,-BitsPerSample/2,SEEK_CUR);
+					fwrite(amostra,BitsPerSample/2,1,saidaWav); //escreve amostra de audio no arquivo de saida
+				} else fwrite(amostraEntrada,BitsPerSample/2,1,saidaWav);
 
 
 
-					fread(amostra,BitsPerSample,1,entradaWav); //coleta amostra de audio
-				}
-			} else printf("Arquivo %s com taxa de amostragem diferente de %d\n",argv[i],SampleRate );
+				fread(amostra,BitsPerSample/2,1,entradaWav); //coleta amostra de audio
+			}
 		}
 	}
 	fseek(saidaWav,4,SEEK_SET);
@@ -97,7 +91,7 @@ void cat(int argc, char *argv[]){
 
 int main(int argc, char *argv[]){
 	
-	cat(argc,argv);
+	mix(argc,argv);
 	
 	return 0;
 }

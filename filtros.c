@@ -1,3 +1,4 @@
+//RENATO RIBEIRO DA SILVA GRR20172113
 #include "filtros.h"
 
 void lerWav(FILE *entradaWav, tipoWav* wav){

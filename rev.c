@@ -1,3 +1,4 @@
+//RENATO RIBEIRO DA SILVA GRR20172113
 #include "filtros.h"
 
 void reverteWav(tipoWav* wav, FILE *entradaWav,FILE *saidaWav){

@@ -1,3 +1,4 @@
+//RENATO RIBEIRO DA SILVA GRR20172113
 #include "filtros.h"
 
 
@@ -25,7 +26,6 @@ void ajustVolume(tipoWav* wav, FILE *entradaWav,FILE *saidaWav){
 			maior=*amostra;
 		}
 	}
-	printf("MAIOR: %d\n",maior );
 	taxa = PICO/(float)maior;
 	fseek(entradaWav,44,SEEK_SET);
 	fread(amostra,wav->BitsPerSample,1,entradaWav); //coleta amostra de audio
